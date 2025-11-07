@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Scripting.APIUpdating;
 
 public class EnemyController : MonoBehaviour
 {
@@ -56,20 +57,24 @@ public class EnemyController : MonoBehaviour
         EnemyAI();
     }
 
-
     void EnemyAI()
     {
-        // 방향 벡터 계산
-        Vector3 dir = (target.position - transform.position).normalized;
-
-        // 이동
-        rb.linearVelocity = dir * enemySpeed;
+        Move();
 
         // 플립
         if (transform.position.x > target.position.x)
             spriteRenderer.flipX = true;
         else
             spriteRenderer.flipX = false;
+    }
+
+    void Move()
+    {
+        // 방향 벡터 계산
+        Vector3 dir = (target.position - transform.position).normalized;
+
+        // 이동
+        rb.linearVelocity = dir * enemySpeed;
     }
 
     void UpdateHealthBarUI(float maxHp, float currentHp)
@@ -95,6 +100,9 @@ public class EnemyController : MonoBehaviour
     
     void Die()
     {
+        var exp = ExpManager.Instance.GetExp();
+        exp.transform.position = transform.position;
+        
         SpawnManager.Instance.Despawn(gameObject);
     }
 }

@@ -15,14 +15,15 @@ public class PlayerManager : SingleTon<PlayerManager>
     public LevelSystem levelSystem; 
     public PlayerStats playerStats;
     public StatCalculator statCalculator;
+    public Drain drain;
     public SpriteRenderer spriteRenderer;
+    public Rigidbody2D rb;
 
     [Header("현재 선택된 캐릭터")]
     public Character character; // 얘가 중요한거임 일단.
 
     void Start()
     {
-        // 1. 씬에 "Player"라는 태그가 부착된 오브젝트를 넣는다.
         player = GameObject.FindGameObjectWithTag("Player");
 
         // 2. 그 객체의 컴퍼넌트를 담는다.
@@ -31,7 +32,9 @@ public class PlayerManager : SingleTon<PlayerManager>
         levelSystem = player.GetComponent<LevelSystem>();
         playerStats = player.GetComponent<PlayerStats>();
         statCalculator = player.GetComponent<StatCalculator>();
+        drain = player.GetComponentInChildren<Drain>();
         spriteRenderer = player.GetComponent<SpriteRenderer>();
+        rb = player.GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -58,10 +61,10 @@ public class PlayerManager : SingleTon<PlayerManager>
 
     public void InitPlayer(Character character)
     {
-        // 캐릭터 기본 선택
-        playerStats.character = character;
-        battleSystem.aaPool.SetAAPool(character);
-        spriteRenderer.sprite = playerStats.character.sprite;
-        statCalculator.DefaultCalculate();
+        spriteRenderer.sprite = character.sprite; // 캐릭터 이미지 세팅하고
+        
+        statCalculator.DefaultCalculate(); // 기본 스펙 세팅
+        battleSystem.aaPool.SetAAPool(character);  // aapool 만들어서 총알장전
+        playerController.FullStatus(playerStats.Stat); // 최초 체력이랑 마나 세팅
     }
 }

@@ -1,20 +1,21 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName="Player/character")]
+[CreateAssetMenu(fileName = "Character", menuName="Player/character")]
 public class Character : ScriptableObject
 {
     [Header("캐릭터 스프라이트")]
     public Sprite sprite;
 
-    [Header("캐릭터 기본스펙")]
+    [Header("캐릭터 전투스펙")]
     public float baseHp;
     public float baseMp;
     public float baseSpeed;
     public float baseAttack;
 
-    [Header("레벨 / 경험치")]
-    public int level;
-    public float exp;
+    [Header("고정 스펙(어떤 캐릭이든 같음)")]
+    public float drainArea = 1.5f;
+
+
 
     [Header("평타 OBJ")]
     public GameObject aaObj; 

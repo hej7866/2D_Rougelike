@@ -33,7 +33,7 @@ public class BattleSystem : MonoBehaviour
         {
             for (int i = 0; i < size; i++)
             {
-                var go = Instantiate(aaObjPrefab, PlayerManager.Instance.battleSystem.transform);
+                var go = Instantiate(aaObjPrefab, PlayerManager.Instance.transform);
                 go.SetActive(false);
                 _aaPool.Enqueue(go);
             }
@@ -50,7 +50,7 @@ public class BattleSystem : MonoBehaviour
 
             if (expandable && aaObjPrefab != null)
             {
-                var go = Instantiate(aaObjPrefab, PlayerManager.Instance.battleSystem.transform);
+                var go = Instantiate(aaObjPrefab, PlayerManager.Instance.transform);
                 go.SetActive(true);
                 return go;
             }
@@ -63,7 +63,7 @@ public class BattleSystem : MonoBehaviour
         {
             if (!go) return;
             go.SetActive(false);
-            go.transform.SetParent(PlayerManager.Instance.battleSystem.transform);
+            go.transform.SetParent(PlayerManager.Instance.transform);
             _aaPool.Enqueue(go);
         }
     }
@@ -86,6 +86,8 @@ public class BattleSystem : MonoBehaviour
 
             var go = PlayerManager.Instance.battleSystem.aaPool.Get();
             AAObj aaObj = go.GetComponent<AAObj>();
+
+            go.transform.position = player.transform.position;
 
             aaObj.dir = dir;
 

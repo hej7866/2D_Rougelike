@@ -1,13 +1,15 @@
 using UnityEngine;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 [DefaultExecutionOrder(-30)]
 public class PlayerController : MonoBehaviour
 {
-    public PlayerStats playerStats;
+    public PlayerManager pm;
 
     // ===== 이동 지점 =====
     public Vector3 targetPoint { get; private set; }
+    Vector3 dir;
 
 
     #region 플레이어 체력 및 마나
@@ -15,19 +17,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _hp;
     [SerializeField] private float _mp;
 
-    public event Action<float, float> OnHpChanged, OnMpChanged;
+    public event Action<PlayerController> OnHpChanged, OnMpChanged;
 
     public float Hp
     {
         get => _hp;
         set
         {
-            float max = playerStats ? playerStats.Stat.MaxHp : Mathf.Infinity;
+            float max = pm.playerStats ? pm.playerStats.Stat.MaxHp : Mathf.Infinity;
             float nv = Mathf.Clamp(value, 0f, max);
             if (Mathf.Approximately(_hp, nv)) return;
             float ov = _hp;
             _hp = nv;
-            OnHpChanged?.Invoke(ov, _hp); // ui 처리 해야함
+            OnHpChanged?.Invoke(this); // ui 처리 해야함
             if (_hp <= 0f) Die();
         }
     }
@@ -37,24 +39,23 @@ public class PlayerController : MonoBehaviour
         get => _mp;
         set
         {
-            float max = playerStats ? playerStats.Stat.MaxMp : Mathf.Infinity;
+            float max = pm.playerStats ? pm.playerStats.Stat.MaxMp : Mathf.Infinity;
             float nv = Mathf.Clamp(value, 0f, max);
             if (Mathf.Approximately(_mp, nv)) return;
             float ov = _mp;
             _mp = nv;
-            OnMpChanged?.Invoke(ov, _mp); // ui 처리 해야함
+            OnMpChanged?.Invoke(this); // ui 처리 해야함
         }
     }
     #endregion
 
-    void Awake()
-    {
-        playerStats.statCalc.OnDefaultCalculated += OnInitialize; // 1. 캐릭터 선택시 "스텟 계산기"에서 기초 스텟을 적용한 뒤 현재 체력(풀피) 현재 마나(풀마나) 반영
-    }
 
     void Start()
     {
-        playerStats = PlayerManager.Instance.playerStats;
+        pm = PlayerManager.Instance;
+
+        OnHpChanged += UIManager.Instance.UpdateUIOnChangePlayerConditon;
+        OnMpChanged += UIManager.Instance.UpdateUIOnChangePlayerConditon;
     }
 
 
@@ -66,15 +67,17 @@ public class PlayerController : MonoBehaviour
             var tp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             targetPoint = new Vector3(tp.x, tp.y, transform.position.z);
 
-            PlayerManager.Instance.spriteRenderer.flipX = transform.position.x < targetPoint.x;
+            pm.spriteRenderer.flipX = transform.position.x < targetPoint.x;
         }
 
+        transform.position = Vector3.MoveTowards(transform.position, targetPoint, pm.playerStats.Stat.Speed * Time.deltaTime);
+        
         if (Input.GetKeyDown(KeyCode.A)) key = KeyCode.A;
         else if (Input.GetKeyDown(KeyCode.Q)) key = KeyCode.Q;
         else if (Input.GetKeyDown(KeyCode.W)) key = KeyCode.W;
         else if (Input.GetKeyDown(KeyCode.E)) key = KeyCode.E;
         else if (Input.GetKeyDown(KeyCode.R)) key = KeyCode.R;
-        
+
         switch (key)
         {
             case KeyCode.A:
@@ -90,11 +93,11 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, targetPoint, playerStats.Stat.Speed * Time.deltaTime);
         key = KeyCode.None; // ← 매 프레임 끝에 리셋
     }
 
-    void OnInitialize(Stat newStat)
+
+    public void FullStatus(Stat newStat)
     {
         Hp = newStat.MaxHp;
         Mp = newStat.MaxMp;

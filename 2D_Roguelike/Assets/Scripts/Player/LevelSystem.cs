@@ -1,56 +1,60 @@
 // LevelSystem.cs
 using UnityEngine;
 using System;
+using UnityEngine.InputSystem.Composites;
 
 public class LevelSystem : MonoBehaviour
 {
     [Header("레벨/경험치")]
-    [SerializeField] private int _level = 0;
-    [SerializeField] private float _exp = 0f;
+    [SerializeField] private int _level = 0; // 현재 레벨
+    [SerializeField] private float _requiredExp; // 필요 경험치
+    [SerializeField] private float _exp = 0f; // 현재 경험치
 
     public int Level => _level;
+    public float RequiredExp => _requiredExp;
     public float Exp => _exp;
 
-    public event Action<int> OnLevelChanged;     // 새 레벨
-    public event Action<float> OnExpChanged;     // 현재 경험치
-    public event Action<int, float> OnRequiredExpChanged; // (level, required)
+    public event Action<LevelSystem> OnLevelChanged;     // 새 레벨
+    public event Action<LevelSystem> OnExpChanged;     // 현재 경험치
+    public event Action<int> OnRequiredExpChanged; // (level, required)
+
+    private void Start()
+    {
+        _requiredExp = 100f;
+        _level = 0;
+
+        OnRequiredExpChanged += CalculateRequiredExp;
+        OnExpChanged += UIManager.Instance.UpdateUIOnChangePlayerConditon;
+        OnLevelChanged += AgumentManager.Instance.SetAgument; // 증강 세팅
+        OnLevelChanged += UIManager.Instance.UpdateUIOnLevelUp; // ui 온
+        OnLevelChanged += PlayerManager.Instance.statCalculator.CalculateOnLevelUp; // 레벨이 오르면 스펙 재계산
+    }
 
     // 필요 경험치 함수(예시): 선형. 필요하면 커브/테이블로 교체.
-    public float RequiredExp(int level)
+    public void CalculateRequiredExp(int level)
     {
-        // 레벨 1→2에 10, 이후 +5씩
-        return 10f + (level - 1) * 5f;
+        _requiredExp += +(level - 1) * 5f;
     }
 
     public void AddExp(float amount)
     {
         if (amount <= 0f) return;
         _exp += amount;
-        OnExpChanged?.Invoke(_exp);
+        OnExpChanged.Invoke(this);
 
         TryLevelUpLoop();
     }
 
     private void TryLevelUpLoop()
     {
-        var req = RequiredExp(_level);
-        while (_exp >= req)
+        while (_exp >= _requiredExp)
         {
-            _exp -= req;
+            _exp -= _requiredExp;
             _level++;
-            OnLevelChanged?.Invoke(_level);
-            OnRequiredExpChanged?.Invoke(_level, RequiredExp(_level));
-            req = RequiredExp(_level);
+            OnLevelChanged.Invoke(this);
+            OnRequiredExpChanged?.Invoke(_level);
         }
         // 경험치 변경 브로드캐스트(게이지 갱신용)
-        OnExpChanged?.Invoke(_exp);
-    }
-
-    // 초기 호출용 (UI가 필요 경험치 구독 시)
-    private void Start()
-    {
-        OnRequiredExpChanged?.Invoke(_level, RequiredExp(_level));
-        OnExpChanged?.Invoke(_exp);
-        OnLevelChanged?.Invoke(_level);
+        OnExpChanged.Invoke(this);
     }
 }
