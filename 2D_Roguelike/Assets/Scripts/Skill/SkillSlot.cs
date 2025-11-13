@@ -3,12 +3,25 @@ using UnityEngine.UI;
 
 public class SkillSlot : MonoBehaviour
 {
-    public Slider slider;    // Min 0, Max 1
+    [Header("스킬 객체")]
+    public SkillInstance skillInstance;
+    
+    [Header("스킬 정보 SO")]
     public Skill skill;
-    public bool isCooldown = false;
+    public Image icon;
+    void Awake()
+    {
+        InitSkillInstance();
+    }
 
     void Start()
     {
-        slider = GetComponentInChildren<Slider>();
+        icon = GetComponentInChildren<Image>();
+        icon.sprite = skill.skillIcon;
+    }
+
+    void InitSkillInstance()
+    {
+        skillInstance = new SkillInstance { skill = skill };
     }
 }

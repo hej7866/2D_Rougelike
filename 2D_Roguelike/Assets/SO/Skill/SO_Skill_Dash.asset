@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillType: 2
   key: 100
+  skillIcon: {fileID: 21300000, guid: 1935bbf926915b34cb25d4073e3ffc33, type: 3}
   skillName: Dash
   cooldown: 1

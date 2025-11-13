@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class SpawnManager : SingleTon<SpawnManager>
 {
+    public PoolManager poolManager; 
+
     [Header("플레이어")]
     public GameObject playerPrefab;
     public GameObject playerInstance;
@@ -16,6 +18,7 @@ public class SpawnManager : SingleTon<SpawnManager>
     [Header("Spawn Control")]
     [SerializeField] private float _spawnInterval = 1.25f;
     [SerializeField] private int _maxAlive = 40;           // 동시에 살아있을 최대 수
+    [SerializeField] private int _alive;
 
 
     [Header("Spawn Ring (player-centric)")]
@@ -23,18 +26,11 @@ public class SpawnManager : SingleTon<SpawnManager>
     [SerializeField] private float _maxSpawnDistance;  // 최대거리
 
 
-    [Header("Enemy Pools")]
-    [SerializeField] private EnemyPoolConfig[] _enemyGroups; // 프리팹/초기수 설정
-
-
-    private readonly List<EnemyPool> _pools = new();
-    private int _alive;
-
     protected override void Awake()
     {
         base.Awake();
         if (_targetCamera == null) _targetCamera = Camera.main;
-        BuildPools();
+        poolManager.BuildEnemyPools();
         SpawnPlayer();
         StartCoroutine(SpawnLoop());
     }
@@ -48,78 +44,8 @@ public class SpawnManager : SingleTon<SpawnManager>
     }
     #endregion
 
-    #region Pooling
-    [System.Serializable]
-    public class EnemyPoolConfig
-    {
-        public GameObject prefab;
-        public int initialSize = 8;
-        public int maxSize = 64;
-    }
 
-    private class EnemyPool
-    {
-        public GameObject prefab;
-        public int maxSize;
-        private readonly Queue<GameObject> q = new();
-
-        public EnemyPool(GameObject prefab, int initial, int max, Transform parent = null)
-        {
-            this.prefab = prefab;
-            maxSize = Mathf.Max(initial, max);
-            for (int i = 0; i < initial; i++)
-            {
-                var go = Object.Instantiate(prefab, parent);
-                go.SetActive(false);
-                q.Enqueue(go);
-            }
-        }
-
-        public GameObject Get(Enemy enemy, Transform parent = null)
-        {
-            EnemyController enemyController;
-            if (q.Count > 0)
-            {
-                var go = q.Dequeue();
-                enemyController = go?.GetComponent<EnemyController>();
-                enemyController.enemy = enemy;
-                go.SetActive(true);
-                return go;
-            }
-            // 풀 비었으면 새로 생성 (상한은 호출측에서 관리)
-            var inst = Object.Instantiate(prefab, parent);
-            inst.SetActive(true);
-            return inst;
-        }
-
-        public void Return(GameObject go)
-        {
-            go.SetActive(false);
-            q.Enqueue(go);
-        }
-    }
-
-    private void BuildPools()
-    {
-        _pools.Clear();
-        foreach (var cfg in _enemyGroups)
-        {
-            if (cfg.prefab == null) continue;
-            _pools.Add(new EnemyPool(cfg.prefab, Mathf.Max(0, cfg.initialSize), Mathf.Max(cfg.initialSize, cfg.maxSize), this.transform));
-        }
-    }
-
-    /// <summary>외부(적이 죽을 때)에서 호출: 풀로 반환</summary>
-    public void Despawn(GameObject enemy)
-    {
-        // 어떤 풀 건지 모르면 간단히 비활성만 해도 되지만,
-        // 프리팹 매핑을 원하면 Dictionary<GameObject, EnemyPool>을 추가로 두면 됨.
-        enemy.SetActive(false);
-        _alive = Mathf.Max(0, _alive - 1);
-    }
-    #endregion
-
-    #region Spawning
+    #region EnemySpawning
     private IEnumerator SpawnLoop()
     {
         // 플레이어 준비 대기
@@ -138,14 +64,14 @@ public class SpawnManager : SingleTon<SpawnManager>
 
     private void TrySpawnEnemy()
     {
-        if (_pools.Count == 0 || playerTr == null) return;
+        if (poolManager.enemyPools.Count == 0 || playerTr == null) return;
 
         // 디버그 기록 초기화
         _debugTried.Clear();
         _debugAccepted.Clear();
         _debugHasChosen = false;
 
-        var pool = _pools[Random.Range(0, _pools.Count)];
+        var pool = poolManager.enemyPools[Random.Range(0, poolManager.enemyPools.Count)];
 
         const int MAX_TRIES = 16;
         Vector3 spawnPos = playerTr.position;
@@ -192,6 +118,14 @@ public class SpawnManager : SingleTon<SpawnManager>
         enemy.transform.rotation = Quaternion.identity;
 
         _alive++;
+    }
+
+    public void Despawn(GameObject enemy)
+    {
+        // 어떤 풀 건지 모르면 간단히 비활성만 해도 되지만,
+        // 프리팹 매핑을 원하면 Dictionary<GameObject, EnemyPool>을 추가로 두면 됨.
+        enemy.SetActive(false);
+        _alive = Mathf.Max(0, _alive - 1);
     }
 
     private bool IsOutsideCameraView(Vector3 worldPos)

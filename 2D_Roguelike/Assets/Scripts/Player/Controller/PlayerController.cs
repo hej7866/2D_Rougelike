@@ -84,7 +84,10 @@ public class PlayerController : MonoBehaviour
         // 이동 스킬(입력만 여기서받고 fixed update에서 처리해야함)
         if (Input.GetKeyDown(KeyCode.D))
         {
-            dashPressed = true;
+            if(UIManager.Instance.skillRuntimeView.D_skillSlot.skillInstance.TryConsume())
+            {
+                dashPressed = true;   
+            }
         }
 
         switch (key)

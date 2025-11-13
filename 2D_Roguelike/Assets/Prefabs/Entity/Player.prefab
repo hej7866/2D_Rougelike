@@ -268,6 +268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pm: {fileID: 0}
+  targetPoint: {x: 0, y: 0, z: 0}
   _hp: 0
   _mp: 0
   key: 0
@@ -312,7 +313,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   utile:
-    dash: {fileID: 11400000, guid: beec3f752fd849041a1dc994cc1aea67, type: 2}
+    _dash: {fileID: 11400000, guid: beec3f752fd849041a1dc994cc1aea67, type: 2}
     _dashDuration: 0.1
     _dashDistance: 15
   aaPool:

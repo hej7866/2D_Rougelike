@@ -9,6 +9,7 @@ public class UIManager : SingleTon<UIManager>
     [Header("View")]
     public PlayerView playerView;
     public AgumentView agumentView;
+    public SkillRuntimeView skillRuntimeView;
 
     void OnEnable()  => HideCursor();
     void OnDisable() => ShowCursor();

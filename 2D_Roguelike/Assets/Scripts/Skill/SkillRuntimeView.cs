@@ -4,27 +4,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillRuntimeView : SingleTon<SkillRuntimeView>
+public class SkillRuntimeView : MonoBehaviour
 {
-    [SerializeField] SkillSlot skillSlot;   // D 슬롯
-    [SerializeField] Slider slider;         // D 슬롯의 슬라이더 (참조 연결)
+    [Header("Utile")]
+    public SkillSlot D_skillSlot;   // D 슬롯
+    [SerializeField] private Slider _D_slider;         // D 슬롯의 슬라이더 (참조 연결)
 
 
-    BattleSystem.Utile utile;
+    [Header("Active")]
+    public SkillSlot Q_skillSlot;   // D 슬롯
+    [SerializeField] private Slider _Q_slider;         // D 슬롯의 슬라이더 (참조 연결)
+    public SkillSlot W_skillSlot;   // D 슬롯
+    [SerializeField] private Slider _W_slider;         // D 슬롯의 슬라이더 (참조 연결)
+    public SkillSlot E_skillSlot;   // D 슬롯
+    [SerializeField] private Slider _E_slider;         // D 슬롯의 슬라이더 (참조 연결)
+    public SkillSlot R_skillSlot;   // D 슬롯
+    [SerializeField] private Slider _R_slider;         // D 슬롯의 슬라이더 (참조 연결)
+
+
 
     void Start()
     {
-        utile = PlayerManager.Instance.battleSystem.utile;
-        slider.minValue = 0f;
-        slider.maxValue = 1f;
+        _D_slider.minValue = 0f;
+        _D_slider.maxValue = 1f;
+
+        _Q_slider.minValue = 0f;
+        _Q_slider.maxValue = 1f;
+
+        _W_slider.minValue = 0f;
+        _W_slider.maxValue = 1f;
+
+        _E_slider.minValue = 0f;
+        _E_slider.maxValue = 1f;
+
+        _R_slider.minValue = 0f;
+        _R_slider.maxValue = 1f;
     }
 
     void Update()
     {
-        if (utile == null) return;
-
+        if (D_skillSlot.skillInstance.skill == null) return;
         // 채워졌다가 줄어드는 느낌이면 그대로:
-        slider.value = utile.DashNormalized; // 1 → 0
+        _D_slider.value = D_skillSlot.skillInstance.Normalized; // 1 → 0
 
     }
 }

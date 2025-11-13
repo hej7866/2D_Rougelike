@@ -118,10 +118,7 @@ public class EnemyController : MonoBehaviour
     {
         var exp = ExpManager.Instance.GetExp();
         exp.transform.position = transform.position;
-        if (deathEffectPrefab != null)
-        {
-            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-        }
+        PoolManager.Instance.deathEffectPools.GetParticleSystem(transform.position);
         SpawnManager.Instance.Despawn(gameObject);
     }
 }
