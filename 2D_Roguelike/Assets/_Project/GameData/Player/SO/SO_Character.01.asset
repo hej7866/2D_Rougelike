@@ -25,3 +25,4 @@ MonoBehaviour:
   W_Skill: {fileID: 11400000, guid: 87f03576667837b4cb5eb278187bf2ca, type: 2}
   E_Skill: {fileID: 11400000, guid: 37752669f99fcfc4c90a567e02cdd4dc, type: 2}
   R_Skill: {fileID: 11400000, guid: 7a540d1db0afa5341b9b41db53f7abb5, type: 2}
+  weapon: {fileID: 11400000, guid: 5b8f65e4021f13441a81d5b05b11e90a, type: 2}

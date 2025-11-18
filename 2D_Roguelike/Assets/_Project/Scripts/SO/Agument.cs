@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum OperationType { add, mul }
 
-[CreateAssetMenu(fileName = "Agument", menuName = "Scriptable Objects/Agument")]
+[CreateAssetMenu(fileName = "Agument", menuName = "Aguments/Agument")]
 public class Agument : ScriptableObject
 {
     public string agumentName;

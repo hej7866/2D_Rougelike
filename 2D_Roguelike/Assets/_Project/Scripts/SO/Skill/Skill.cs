@@ -37,7 +37,7 @@ public struct SkillDefinition
     public int id;
 }
 
-[CreateAssetMenu(fileName = "Skill", menuName = "Skill/Skill")]
+[CreateAssetMenu(fileName = "Skill", menuName = "Skills/Skill")]
 public class Skill  : ScriptableObject
 {
     public SkillDefinition skillDefinition;

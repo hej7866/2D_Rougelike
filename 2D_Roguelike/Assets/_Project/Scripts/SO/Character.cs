@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Character", menuName="Player/character")]
+[CreateAssetMenu(fileName = "Character", menuName="Characters/character")]
 public class Character : ScriptableObject
 {
     public int characterId;
@@ -27,4 +27,7 @@ public class Character : ScriptableObject
     public Skill W_Skill;
     public Skill E_Skill;
     public Skill R_Skill;
+
+    [Header("무기")]
+    public Weapon weapon;
 }

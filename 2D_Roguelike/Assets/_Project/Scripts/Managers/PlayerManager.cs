@@ -76,5 +76,7 @@ public class PlayerManager : SingleTon<PlayerManager>
         statCalculator.DefaultCalculate(); // 기본 스펙 세팅
         battleSystem.aaPool.SetAAPool(character);  // aapool 만들어서 총알장전
         playerController.OnApplyVital(playerStat.stat); // 최초 체력이랑 마나 세팅
+        character.weapon.InitWeapon(player);
+        StartCoroutine(character.weapon.WeaponController(player));
     }
 }

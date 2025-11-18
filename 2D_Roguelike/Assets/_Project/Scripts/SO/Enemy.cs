@@ -1,7 +1,7 @@
 using UnityEditor.Animations;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Enemy", menuName = "Enemy/enemy")]
+[CreateAssetMenu(fileName = "Enemy", menuName = "Enemys/enemy")]
 public class Enemy : ScriptableObject
 {
     public Sprite sprite;
