@@ -6,7 +6,7 @@ public class Aim : MonoBehaviour
     public Transform dir;   // 화살표 오브젝트 (자식)
     public float radius = 1.5f; // 원 반지름
 
-    void Update()
+    void FixedUpdate()
     {
         Look();
     }

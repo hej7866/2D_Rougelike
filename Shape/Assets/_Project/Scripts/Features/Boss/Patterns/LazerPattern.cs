@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using UnityEditor.ShaderGraph.Internal;
+
 
 [CreateAssetMenu(menuName = "Boss/Patterns/Lazer")]
 public class LazerPattern : BossPattern

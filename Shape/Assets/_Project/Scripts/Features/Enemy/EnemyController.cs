@@ -10,6 +10,7 @@ public class EnemyController : MonoBehaviour
     public Transform target;
     public PoolManager.EnemyPool OriginPool { get; set; }
     [SerializeField] private GameObject deathEffectPrefab;
+    [SerializeField] private Transform canvasTr;
 
     [Header("적 객체")]
     public Enemy enemy;
@@ -61,6 +62,13 @@ public class EnemyController : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+        Rotate();
+    }
+
+    void LateUpdate()
+    {
+        // 부모의 회전을 상쇄시키기
+        canvasTr.rotation = Quaternion.identity;
     }
 
     // void EnemyAI() // 나중에 좀 똑똑하게 바꿀때 쓸꺼임
@@ -92,6 +100,15 @@ public class EnemyController : MonoBehaviour
             spriteRenderer.flipX = true;
         else
             spriteRenderer.flipX = false;
+    }
+
+    void Rotate()
+    {
+        Vector3 dir = (target.position - transform.position).normalized;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
     }
 
     void UpdateHealthTextUI(float maxHp, float currentHp)

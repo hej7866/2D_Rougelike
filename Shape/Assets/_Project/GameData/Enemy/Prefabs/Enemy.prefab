@@ -439,6 +439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   deathEffectPrefab: {fileID: 2090208464395391630, guid: bd68ed84243a3ef4fa5c4d3a3abc4759, type: 3}
+  canvasTr: {fileID: 1501701426095100552}
   enemy: {fileID: 0}
   _enemyHp: 0
   enemySpeed: 0

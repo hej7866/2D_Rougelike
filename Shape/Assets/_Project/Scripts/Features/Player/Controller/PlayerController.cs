@@ -146,8 +146,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(pm.battleSystem.utile.DashRoutine(pm.rb));
         }
     }
-    
-    
+       
 
 
     void OnCollisionStay2D(Collision2D collision)

@@ -27,9 +27,12 @@ public class SpawnManager : SingleTon<SpawnManager>
     [SerializeField] private int _alive;
 
 
-    [Header("Spawn Ring (player-centric)")]
-    [SerializeField] private float _minSpawnDistance;  // 플레이어로부터 최소거리
-    [SerializeField] private float _maxSpawnDistance;  // 최대거리
+    [Header("Spawn Rect (player-centric)")]
+    // 플레이어 기준 "카메라보다 살짝 큰" 안쪽 박스 (여기엔 스폰 안 함)
+    [SerializeField] private Vector2 _innerRectHalfSize = new Vector2(0f, 0f);
+    // 바깥쪽 스폰 박스 (최대 범위)
+    [SerializeField] private Vector2 _outerRectHalfSize = new Vector2(0f, 0f);
+
 
 
     protected override void Awake()
@@ -42,6 +45,15 @@ public class SpawnManager : SingleTon<SpawnManager>
 
     void Start()
     {
+        float halfH = _targetCamera.orthographicSize;                // 세로 반쪽
+        float halfW = _targetCamera.orthographicSize * _targetCamera.aspect; // 가로 반쪽
+
+        // inner = 카메라 화면 영역 그대로
+        _innerRectHalfSize = new Vector2(halfW, halfH);
+
+        // outer = 카메라 크기의 1.5배
+        _outerRectHalfSize = _innerRectHalfSize * 1.5f;
+
         StartCoroutine(SpawnLoop()); // 에너미 생성 루프 실행
     }
 
@@ -97,15 +109,28 @@ public class SpawnManager : SingleTon<SpawnManager>
 
         for (int i = 0; i < MAX_TRIES; i++)
         {
-            var dir = Random.insideUnitCircle.normalized;
-            float dist = Random.Range(_minSpawnDistance, _maxSpawnDistance);
-            var cand2 = (Vector2)playerTr.position + dir * dist;
-            var candidate = new Vector3(cand2.x, cand2.y, 0f);
+            // 1) 플레이어 기준 큰 직사각형 안에서 랜덤 위치
+            Vector2 local = new Vector2(
+                Random.Range(-_outerRectHalfSize.x, _outerRectHalfSize.x),
+                Random.Range(-_outerRectHalfSize.y, _outerRectHalfSize.y)
+            );
 
-            _debugTried.Add(candidate); // 시도 지점 기록
-
-            if (!IsOutsideCameraView(candidate))
+            // 2) 작은 직사각형 안이면(카메라 근처) 버림
+            if (Mathf.Abs(local.x) < _innerRectHalfSize.x &&
+                Mathf.Abs(local.y) < _innerRectHalfSize.y)
+            {
                 continue;
+            }
+
+            Vector3 candidate = playerTr.position + (Vector3)local;
+            candidate.z = 0f;
+
+            _debugTried.Add(candidate);
+
+            // 카메라 밖 보장을 innerRect로 이미 어느 정도 하고 있으니까
+            // 필요하면 IsOutsideCameraView는 빼도 되고, 불안하면 한 번 더 체크해도 됨.
+            // if (!IsOutsideCameraView(candidate))
+            //     continue;
 
             if (IsEnemyTooClose(candidate))
             {
@@ -128,6 +153,7 @@ public class SpawnManager : SingleTon<SpawnManager>
             _debugHasChosen = true;
             break;
         }
+
 
         if (!found) return;
 
@@ -206,14 +232,14 @@ public class SpawnManager : SingleTon<SpawnManager>
         if (!debugDraw) return;
 
         // 1) 플레이어 중심 스폰 링
-        if (playerTr != null)
+       if (playerTr != null)
         {
-            Gizmos.color = colRingMin;
-            Gizmos.DrawWireSphere(playerTr.position, _minSpawnDistance);
-
-            Gizmos.color = colRingMax;
-            Gizmos.DrawWireSphere(playerTr.position, _maxSpawnDistance);
+            // 안쪽 박스 (카메라 근처, 미스폰 영역)
+            DrawRect(playerTr.position, _innerRectHalfSize, Color.yellow);
+            // 바깥 박스 (최대 스폰 영역)
+            DrawRect(playerTr.position, _outerRectHalfSize, Color.cyan);
         }
+
 
         // 2) 카메라 뷰포트 사각형 (마진 포함)
         if (_targetCamera != null)
@@ -265,5 +291,20 @@ public class SpawnManager : SingleTon<SpawnManager>
             #endif
         }
     }
+
+    void DrawRect(Vector3 center, Vector2 halfSize, Color c)
+    {
+        Gizmos.color = c;
+        Vector3 bl = center + new Vector3(-halfSize.x, -halfSize.y, 0);
+        Vector3 tl = center + new Vector3(-halfSize.x,  halfSize.y, 0);
+        Vector3 tr = center + new Vector3( halfSize.x,  halfSize.y, 0);
+        Vector3 br = center + new Vector3( halfSize.x, -halfSize.y, 0);
+
+        Gizmos.DrawLine(bl, tl);
+        Gizmos.DrawLine(tl, tr);
+        Gizmos.DrawLine(tr, br);
+        Gizmos.DrawLine(br, bl);
+    }
+
     #endregion
 }
