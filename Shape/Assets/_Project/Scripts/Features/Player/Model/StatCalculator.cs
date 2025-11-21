@@ -49,6 +49,8 @@ public class StatCalculator : MonoBehaviour
         _stat[StatType.MaxMp] = pm.character.baseMp;
         _stat[StatType.Speed] = pm.character.baseSpeed;
         _stat[StatType.Attack] = pm.character.baseAttack;
+        _stat[StatType.CriticalProb] = pm.character.CriticalProb;
+        _stat[StatType.CriticalValue] = pm.character.CriticalValue;
         _stat[StatType.DrainArea] = pm.character.drainArea;
 
         Modifier();
@@ -64,12 +66,11 @@ public class StatCalculator : MonoBehaviour
         int L = Mathf.Max(1, levelSystem.Level);
         int idx = L - 1; // 커브 입력용
 
-        // 1) 성장테이블 기반 스펙업
+        // 1) 성장테이블 기반 스펙업 레벨 디자인 이후 수정
         _stat[StatType.MaxHp] += 10f;
         _stat[StatType.MaxMp] += 10f;
         _stat[StatType.Speed] += 0.1f;
         _stat[StatType.Attack] += +2f;
-        _stat[StatType.DrainArea] += 0f;
 
         Modifier();
     }

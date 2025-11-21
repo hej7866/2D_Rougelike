@@ -42,11 +42,21 @@ public class RotateWeapon : Weapon
     List<GameObject> weaponList = new List<GameObject>();
     public override void InitWeapon(GameObject player)
     {
-        weaponList.Clear();
-        _angle = 0f;
-        for(int i=0; i<count; i++)
+        // 1. 기존 무기 정리
+        for (int i = 0; i < weaponList.Count; i++)
         {
-            var wp = Instantiate(weaponPrefab, player.transform.position, Quaternion.identity);
+            if (weaponList[i] != null)
+            {
+                Destroy(weaponList[i]);   // ScriptableObject라 this.Destroy 말고 Object.Destroy
+            }
+        }
+        weaponList.Clear();
+
+        // 2. 새로 생성
+        _angle = 0f;
+        for (int i = 0; i < count; i++)
+        {
+            var wp = Object.Instantiate(weaponPrefab, player.transform.position, Quaternion.identity);
             wp.transform.SetParent(player.transform);
             wp.GetComponent<RotateWeaponObj>().IninRotateWeaponObj(weaponDamage);
             weaponList.Add(wp);

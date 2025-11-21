@@ -55,7 +55,8 @@ public class PlayerView : MonoBehaviour
             PlayerManager pm = PlayerManager.Instance;
             for (int i = 0; i < pm.playerStat.StatList.Count; i++)
             {
-                statTexts[i].text = $"[{pm.playerStat.StatList[i].type}] : {pm.playerStat.StatList[i].value}";
+                float displayedValue = Mathf.Round(pm.playerStat.StatList[i].value * 10) / 10f;
+                statTexts[i].text = $"[{pm.playerStat.StatList[i].type}] : {displayedValue}";
             }
         }
         else
@@ -63,7 +64,8 @@ public class PlayerView : MonoBehaviour
             PlayerManager pm = PlayerManager.Instance;
             for (int i = 0; i < pm.playerStat.StatList.Count; i++)
             {
-                statTexts[i].text = $"[{pm.playerStat.StatList[i].type}] : {pm.playerStat.StatList[i].value}";
+                float displayedValue = Mathf.Round(pm.playerStat.StatList[i].value * 10) / 10f;
+                statTexts[i].text = $"[{pm.playerStat.StatList[i].type}] : {displayedValue}";
             }
         }
     }

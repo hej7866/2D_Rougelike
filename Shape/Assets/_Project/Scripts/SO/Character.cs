@@ -16,6 +16,8 @@ public class Character : ScriptableObject
 
     [Header("고정 스펙(어떤 캐릭이든 같음)")]
     public float drainArea = 1.5f;
+    public float CriticalProb;
+    public float CriticalValue;
 
 
     [Header("평타 OBJ")]
@@ -30,4 +32,5 @@ public class Character : ScriptableObject
 
     [Header("무기")]
     public Weapon weapon;
+    [System.NonSerialized] public Weapon weaponInstance;
 }

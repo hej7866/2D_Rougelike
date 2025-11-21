@@ -3,11 +3,13 @@ using UnityEngine;
 public class AAProj : Proj
 {
     private BattleSystem.AAPool _aaPool;
+    private bool _isCritical;
 
-    public void InitAAProj(BattleSystem.AAPool pool, Vector3 direction)
+    public void InitAAProj(BattleSystem.AAPool pool, Vector3 direction, bool isCritical)
     {
         _aaPool = pool;
         _dir = direction.normalized;
+        _isCritical = isCritical;
         _t = 0f;
         gameObject.SetActive(true);
     }
@@ -22,7 +24,10 @@ public class AAProj : Proj
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        _damage = PlayerManager.Instance.playerStat.stat[StatType.Attack];
+        _damage = 
+        _isCritical ?
+        PlayerManager.Instance.playerStat.Stat[StatType.Attack] * PlayerManager.Instance.playerStat.Stat[StatType.CriticalValue] : 
+        PlayerManager.Instance.playerStat.Stat[StatType.Attack];
 
         // 1) 일반 적
         if (collision.CompareTag("Enemy"))

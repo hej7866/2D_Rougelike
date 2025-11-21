@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: SO_Character.01
   m_EditorClassIdentifier: 
   characterId: 1
-  sprite: {fileID: 21300000, guid: f7f117fbe0e2cbb459a5f2122fce9615, type: 3}
+  sprite: {fileID: 21300000, guid: 3af86dcf2348fb443bc93af61f5ad22e, type: 3}
   baseHp: 100
   baseMp: 100
   baseSpeed: 3
   baseAttack: 20
   drainArea: 1.5
+  CriticalProb: 100
+  CriticalValue: 1.5
   aaObj: {fileID: 8623997000863016169, guid: 975d1a753c4818a4bb732f8e89416fd9, type: 3}
   D_Skill: {fileID: 11400000, guid: beec3f752fd849041a1dc994cc1aea67, type: 2}
   Q_Skill: {fileID: 11400000, guid: 8e4e1f7bee6b2b74b9607ba2f793cd51, type: 2}

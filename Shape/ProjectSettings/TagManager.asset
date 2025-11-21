@@ -13,6 +13,7 @@ TagManager:
   - BossPattern
   - SkillEffect
   - BossRoom
+  - Shop
   layers:
   - Default
   - TransparentFX

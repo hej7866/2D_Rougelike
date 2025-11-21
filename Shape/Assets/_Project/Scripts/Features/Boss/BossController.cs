@@ -45,7 +45,7 @@ public class BossController : MonoBehaviour
 
         OnBossHpChanged += UpdateBossHealthTextUI;
         OnBossDie += BossDie;
-        OnBossDie += GameManager.Instance.OnGeneralPhase;
+        OnBossDie += GameManager.Instance.OnPreparePhase;
     }
 
 

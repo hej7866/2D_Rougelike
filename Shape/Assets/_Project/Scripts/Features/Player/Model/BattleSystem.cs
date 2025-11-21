@@ -102,14 +102,22 @@ public class BattleSystem : MonoBehaviour
         {
             var player = pm.player;
 
+            // 방향
             var mp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             _aim = new Vector3(mp.x, mp.y, player.transform.position.z);
             var dir = (_aim - player.transform.position).normalized;
 
+            // 오브젝트 생성
             var go = pm.battleSystem.aaPool.Get();
             AAProj aaObj = go.GetComponent<AAProj>();
-            aaObj.InitAAProj(pm.battleSystem.aaPool, dir);
+
+            // 치명타 판정 체크
+            bool isCritical = UnityEngine.Random.Range(0f, 1f) < (pm.playerStat.Stat[StatType.CriticalProb] / 100f);
+
+            // proj정보 입력
+            aaObj.InitAAProj(pm.battleSystem.aaPool, dir, isCritical);
             
+            // 생성위치 및 방향 지정
             go.transform.position = gun.transform.position;
 
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;

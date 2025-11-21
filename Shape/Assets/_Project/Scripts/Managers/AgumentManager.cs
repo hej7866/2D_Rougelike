@@ -24,14 +24,37 @@ public class AgumentManager : SingleTon<AgumentManager>
 
     public void SetAgument(LevelSystem levelSystem)
     {
-        while (hash.Count < _ad.aguments.Length)
+        hash.Clear();
+
+        // 뽑을 수 있는 인덱스 목록 만들기
+        List<int> candidate = new List<int>();
+        float critProb = PlayerManager.Instance.playerStat.Stat[StatType.CriticalProb];
+
+        for (int i = 0; i < _ad.aguments.Length; i++)
         {
-            int ran = Random.Range(0, _ad.aguments.Length);
-            hash.Add(ran);
+            // 5번이 크리티컬 증가 증강
+            if (i == 5 && critProb >= 100f)
+                continue; // 후보에서 제외
+
+            candidate.Add(i);
         }
 
-        List<int> list = hash.ToList();  // using System.Linq
-        for(int i=0; i<agumentBtns.Length; i++)
+        // 뽑아야 할 개수 = 버튼 개수 vs 후보 개수 중 작은 값
+        int need = Mathf.Min(agumentBtns.Length, candidate.Count);
+
+        // 후보 목록에서 랜덤으로 need개 뽑기 (중복 없이)
+        for (int n = 0; n < need; n++)
+        {
+            int idx = Random.Range(0, candidate.Count);
+            int pick = candidate[idx];
+            candidate.RemoveAt(idx);   // 중복 방지
+
+            hash.Add(pick);
+        }
+
+        // UI에 적용
+        List<int> list = hash.ToList();
+        for (int i = 0; i < need; i++)
         {
             AgumentData data = agumentBtns[i].GetComponent<AgumentData>();
             data.agument = _ad.aguments[list[i]];

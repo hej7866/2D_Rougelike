@@ -47,12 +47,9 @@ public class SpawnManager : SingleTon<SpawnManager>
     {
         float halfH = _targetCamera.orthographicSize;                // 세로 반쪽
         float halfW = _targetCamera.orthographicSize * _targetCamera.aspect; // 가로 반쪽
-
-        // inner = 카메라 화면 영역 그대로
-        _innerRectHalfSize = new Vector2(halfW, halfH);
-
-        // outer = 카메라 크기의 1.5배
-        _outerRectHalfSize = _innerRectHalfSize * 1.5f;
+        
+        _innerRectHalfSize = new Vector2(halfW, halfH); // inner = 카메라 화면 영역 그대로
+        _outerRectHalfSize = _innerRectHalfSize * 1.5f; // outer = 카메라 크기의 1.5배
 
         StartCoroutine(SpawnLoop()); // 에너미 생성 루프 실행
     }

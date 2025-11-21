@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: BossRoomTile
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: e84b3f747a325b94b84f6f3354631d38, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 45e5ad590447aad4c85c24b8b229158e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

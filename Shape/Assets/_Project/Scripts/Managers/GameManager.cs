@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.Tilemaps;
-public enum GameState { General, Boss, GameOver }
+public enum GameState { General, Boss, Prepare, GameOver } // 제네럴 -> 보스 -> 프리페어 -> 제네럴
 
 public class GameManager : SingleTon<GameManager>
 {
@@ -19,8 +19,11 @@ public class GameManager : SingleTon<GameManager>
     [Header("그라운드 타일맵 렌더러")]
     [SerializeField] private TilemapRenderer[] _groundTileMapRenderers;
 
-    [Header("보스방 타일맵")]
+    [Header("보스방 타일맵 그리드")]
     [SerializeField] private GameObject _bossRoomGird;
+
+    [Header("상점맵 타일맵 그리드")]
+    [SerializeField] private GameObject _shopGird;
 
     void Start()
     {
@@ -46,6 +49,17 @@ public class GameManager : SingleTon<GameManager>
     {
     }
 
+    public void OnGeneralPhase()
+    {
+        Debug.Log("일반 스테이지");
+        gameState = GameState.General;
+        _shopGird.SetActive(false);
+        foreach(var gtmr in _groundTileMapRenderers)
+        {
+            gtmr.enabled = true;
+        }
+        AudioManager.Instance.PlayGeneralBGM();
+    }
 
     public void OnBossPhase()
     {
@@ -63,18 +77,16 @@ public class GameManager : SingleTon<GameManager>
         ThreatGuage = 0f;
     }
 
-    public void OnGeneralPhase()
+    public void OnPreparePhase()
     {
-        Debug.Log("일반 스테이지");
-        gameState = GameState.General;
-        _bossRoomGird.SetActive(false);
-        foreach(var gtmr in _groundTileMapRenderers)
-        {
-            gtmr.enabled = true;
-        }
-        _stage++;
         ClearBossPatterns();
-        AudioManager.Instance.PlayGeneralBGM();
+        
+        Debug.Log("준비 스테이지");
+        gameState = GameState.Prepare;
+        _stage++;
+        _bossRoomGird.SetActive(false);
+        _shopGird.SetActive(true);
+        _shopGird.transform.position = new Vector3(PlayerManager.Instance.player.transform.position.x - 0.5f, PlayerManager.Instance.player.transform.position.y, 0); 
     }
 
     void ClearBossPatterns()

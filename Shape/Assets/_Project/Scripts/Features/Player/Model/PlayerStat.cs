@@ -8,7 +8,10 @@ public enum StatType
     MaxMp,
     Attack,
     Speed,
-    DrainArea
+    CriticalProb,
+    CriticalValue,
+    DrainArea,
+
 }
 
 [Serializable]
