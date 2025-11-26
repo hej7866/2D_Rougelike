@@ -20,7 +20,7 @@ MonoBehaviour:
   baseSpeed: 3
   baseAttack: 20
   drainArea: 1.5
-  CriticalProb: 100
+  CriticalProb: 0
   CriticalValue: 1.5
   aaProj: {fileID: 8623997000863016169, guid: 975d1a753c4818a4bb732f8e89416fd9, type: 3}
   D_Skill: {fileID: 11400000, guid: beec3f752fd849041a1dc994cc1aea67, type: 2}

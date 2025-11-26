@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agumentName: "\uC774\uB3D9\uC18D\uB3C4"
   agumentDesc: "\uC774\uB3D9\uC18D\uB3C4 1% \uC99D\uAC00"
-  statType: 3
+  statType: 4
   operationType: 1
   value: 0.01

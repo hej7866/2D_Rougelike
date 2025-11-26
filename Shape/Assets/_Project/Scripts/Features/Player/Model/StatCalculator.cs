@@ -64,7 +64,7 @@ public class StatCalculator : MonoBehaviour
     /// </summary>
     public void CalculateOnLevelUp(LevelSystem levelSystem)
     {
-        _stat = pm.playerStat.stat; // 기존 스텟 딕셔너리를 가져온다.
+        _baseStat = pm.playerStat.baseStat; // 기존 스텟 딕셔너리를 가져온다.
 
         int L = Mathf.Max(1, levelSystem.Level);
         int idx = L - 1; // 커브 입력용
@@ -81,7 +81,7 @@ public class StatCalculator : MonoBehaviour
     
     public void CalculateOnSelecetAgument(AgumentData agumentData)
     {
-        _baseStat = pm.playerStat.stat; // 기존 스텟 딕셔너리를 가져온다.
+        _baseStat = pm.playerStat.baseStat; // 기존 스텟 딕셔너리를 가져온다.
         StatType statType = agumentData.agument.statType;
         OperationType operationType = agumentData.agument.operationType;
         float value = agumentData.agument.value;
@@ -114,7 +114,10 @@ public class StatCalculator : MonoBehaviour
                 lv = v; // 0~5강
 
             float factor = 1f + 0.1f * lv; // 예: 1강당 +10%
-            _stat[type] = baseValue * factor;
+            if(type != StatType.CriticalProb)
+                _stat[type] = baseValue * factor;
+            else if(type == StatType.CriticalProb) // 치명타 확률은 20%씩 증가하는걸로 왜냐하면 치명타확률은 Shape 성장시스템으로 밖에 얻지못함. 그리고 애초에 0이기때문에 baseValue * factor 안됨
+                _stat[type] = 20f * lv;
         }
 
         Modifier(); // 이벤트 쏴서 UI, HP 등 갱신

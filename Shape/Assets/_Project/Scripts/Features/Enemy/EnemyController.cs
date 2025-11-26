@@ -36,20 +36,23 @@ public class EnemyController : MonoBehaviour
 
     public event Action<float, float> OnEnemyHpChanged;
 
-    private SpriteRenderer spriteRenderer;
-    private BoxCollider2D boxCollider2D;
-    private TextMeshProUGUI health_Text;
-    private Animator anim;
-    private Rigidbody2D rb;
+    private SpriteRenderer _spriteRenderer;
+    private BoxCollider2D _boxCollider2D;
+    private TextMeshProUGUI _health_Text;
+    private Slider _health_Slider;
+    private Animator _anim;
+    private Rigidbody2D _rb;
 
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        boxCollider2D = GetComponent<BoxCollider2D>();
-        rb = GetComponent<Rigidbody2D>();
-        health_Text = GetComponentInChildren<TextMeshProUGUI>();
-        anim = GetComponent<Animator>();
-        OnEnemyHpChanged += UpdateHealthTextUI;
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _boxCollider2D = GetComponent<BoxCollider2D>();
+        _rb = GetComponent<Rigidbody2D>();
+        //_health_Text = GetComponentInChildren<TextMeshProUGUI>(); 슬라이더로할땐 잠시 보류
+        _health_Slider = GetComponentInChildren<Slider>();
+        _anim = GetComponent<Animator>();
+        //OnEnemyHpChanged += UpdateHealthTextUI;
+        OnEnemyHpChanged += UpdateHealthBarUI;
     }
 
     void Start()
@@ -93,13 +96,13 @@ public class EnemyController : MonoBehaviour
         Vector3 dir = (target.position - transform.position).normalized;
 
         // 이동
-        rb.linearVelocity = dir * enemySpeed;
+        _rb.linearVelocity = dir * enemySpeed;
 
             // 플립
         if (transform.position.x > target.position.x)
-            spriteRenderer.flipX = true;
+            _spriteRenderer.flipX = true;
         else
-            spriteRenderer.flipX = false;
+            _spriteRenderer.flipX = false;
     }
 
     void Rotate()
@@ -113,19 +116,24 @@ public class EnemyController : MonoBehaviour
 
     void UpdateHealthTextUI(float maxHp, float currentHp)
     {
-        health_Text.text = $"{(int)currentHp}";
+        _health_Text.text = $"{(int)currentHp}";
+    }
+
+    void UpdateHealthBarUI(float maxHp, float currentHp)
+    {
+        _health_Slider.value = currentHp / maxHp;
     }
 
     public void SetColliderSize()
     {
-        var lb = spriteRenderer.localBounds;   // 피벗 반영된 로컬 공간 Bounds
-        boxCollider2D.size   = lb.size;       // 가로/세로
-        boxCollider2D.offset = lb.center;     // 피벗이 중앙이 아니어도 정렬됨
+        var lb = _spriteRenderer.localBounds;   // 피벗 반영된 로컬 공간 Bounds
+        _boxCollider2D.size   = lb.size;       // 가로/세로
+        _boxCollider2D.offset = lb.center;     // 피벗이 중앙이 아니어도 정렬됨
     }
 
     public void EnemyInit()
     {
-        spriteRenderer.sprite = enemy.sprite;
+        _spriteRenderer.sprite = enemy.sprite;
         EnemyHP = enemy.hp;
         enemySpeed = enemy.speed;
     }
@@ -133,7 +141,8 @@ public class EnemyController : MonoBehaviour
     public void TakeDamage(float amount)
     {
         EnemyHP -= amount;
-        anim.SetTrigger("Hit");
+        PoolManager.Instance.hitTextPools.GetHitText(this, amount);
+        _anim.SetTrigger("Hit");
     }
 
     void Die()

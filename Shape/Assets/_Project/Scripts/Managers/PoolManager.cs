@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using System;
 using UnityEditor;
+using TMPro;
 
 public class PoolManager : SingleTon<PoolManager>
 {
@@ -15,8 +16,13 @@ public class PoolManager : SingleTon<PoolManager>
 
     [Header("deathEffect Pools")]
     public ParticlePool deathEffectPools;
-    [SerializeField] private ParticleSystem deathEffect;
+    [SerializeField] private ParticleSystem _deathEffect;
     [SerializeField] public GameObject deathEffectPoolsParent;
+
+    [Header("HitText Pools")]
+    public HitTextPool hitTextPools;
+    [SerializeField] private GameObject _hitText;
+    [SerializeField] public GameObject hitTextPoolsParent;
 
     public void BuildEnemyPools()
     {
@@ -28,15 +34,16 @@ public class PoolManager : SingleTon<PoolManager>
         }
     }
 
-    public void BuilddeathEffectPools()
+    public void BuildPools()
     {
-        deathEffectPools = new ParticlePool(deathEffect, 32, deathEffectPoolsParent.transform);
+        deathEffectPools = new ParticlePool(_deathEffect, 32, deathEffectPoolsParent.transform);
+        hitTextPools = new HitTextPool(_hitText, 64, hitTextPoolsParent.transform);
     }
 
     protected override void Awake()
     {
         base.Awake();
-        BuilddeathEffectPools();
+        BuildPools();
     }
 
     [System.Serializable]
@@ -108,14 +115,14 @@ public class PoolManager : SingleTon<PoolManager>
     [Serializable]
     public class ParticlePool
     {
-        [SerializeField] private ParticleSystem ParticlePrefab;
-        [SerializeField] private int size = 32;
+        [SerializeField] private ParticleSystem _particlePrefab;
+        [SerializeField] private int _size;
         public Queue<ParticleSystem> particleQueue = new Queue<ParticleSystem>();
 
         public ParticlePool(ParticleSystem ParticlePrefab, int size, Transform parent = null)
         {
-            this.ParticlePrefab = ParticlePrefab;
-            this.size = size;
+            _particlePrefab = ParticlePrefab;
+            _size = size;
             for (int i = 0; i < size; i++)
             {
                 var p = Instantiate(ParticlePrefab, parent);
@@ -130,6 +137,41 @@ public class PoolManager : SingleTon<PoolManager>
             p.transform.position = pos;
             p.gameObject.SetActive(true);
             return p;
+        }
+    }
+
+    [Serializable]
+    public class HitTextPool
+    {
+        [SerializeField] private GameObject _hitTextPrefab;
+        [SerializeField] private int _size = 64;
+        public Queue<GameObject> hitTextQueue = new Queue<GameObject>();
+
+        public HitTextPool(GameObject hitTextPrefab, int size, Transform parent = null)
+        {
+            _hitTextPrefab = hitTextPrefab;
+            _size = size;
+            for (int i = 0; i < size; i++)
+            {
+                var p = Instantiate(_hitTextPrefab, parent);
+                p.gameObject.SetActive(false);
+                hitTextQueue.Enqueue(p);
+            }
+        }
+
+        public GameObject GetHitText(EnemyController enemy, float damage)
+        {
+            var p = hitTextQueue.Dequeue();
+            p.transform.position = enemy.transform.position + new Vector3(0, 1.6f, 0);
+            p.GetComponentInChildren<TextMeshProUGUI>().text = $"{(int)damage}";
+            p.gameObject.SetActive(true);
+            return p;
+        }
+
+        public void ReturnHitText(GameObject go)
+        {
+            go.SetActive(false);
+            hitTextQueue.Enqueue(go);
         }
     }
 }
